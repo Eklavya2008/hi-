@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dragon Cursor Animation</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      background: #0a0a0a;
+      cursor: none;
+      font-family: Arial, sans-serif;
+    }
+
+    .dragon-tail {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: radial-gradient(circle, #ff6f61, #ff4500);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(255, 69, 0, 0.8);
+    }
+
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 15px rgba(255, 69, 0, 0.8);
+      }
+      100% {
+        box-shadow: 0 0 25px rgba(255, 69, 0, 1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <script>
+    const tailParts = []; 
+    const partCount = 10; // Number of tail segments
+    const segmentSpacing = 10; // Space between each tail segment
+
+    // Create tail parts and add them to the body
+    for (let i = 0; i < partCount; i++) {
+      const tailPart = document.createElement("div");
+      tailPart.classList.add("dragon-tail");
+      document.body.appendChild(tailPart);
+      tailParts.push(tailPart);
+    }
+
+    let mouseX = 0, mouseY = 0;
+    const positions = Array.from({ length: partCount }, () => ({ x: 0, y: 0 }));
+
+    // Track mouse position
+    document.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Smoothly animate the dragon tail
+    function animate() {
+      // Update the first part of the tail to follow the cursor
+      const first = positions[0];
+      first.x += (mouseX - first.x) * 0.15;
+      first.y += (mouseY - first.y) * 0.15;
+
+      // Update the remaining tail parts to follow the preceding part
+      for (let i = 1; i < positions.length; i++) {
+        const prev = positions[i - 1];
+        const current = positions[i];
+        current.x += (prev.x - current.x) * 0.2;
+        current.y += (prev.y - current.y) * 0.2;
+      }
+
+      // Render positions
+      tailParts.forEach((part, index) => {
+        const pos = positions[index];
+        part.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
